@@ -5,12 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "tareas")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Tareas {
+public class Tarea {
 
     @Id
     @Column(name = "id_tarea")
@@ -23,13 +25,15 @@ public class Tareas {
     @Column(name = "descripcion", length = 200)
     private String descripcion;
 
+    @Column(name = "fecha_fin")
+    private Date fechaFin; //yyyy-MM-ddThh:mm:ss
+
     @Column(name = "prioridad", length = 10)
     private String prioridad;
 
     @Column(name = "estado", length = 1)
     private String estado;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_usuario")
-    private Usuario usuario;
+    
+    @Column(name = "id_usuario")
+    private Integer idUsuario;
 }
