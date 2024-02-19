@@ -47,16 +47,18 @@ public class UsuarioService {
     public Usuario editarUsuario(Integer usuario_id, UsuarioDto usuarioDTO) {
         Usuario usuario = buscarIdUsuario(usuario_id);
         if (usuario != null) {
-            if(validarNombreUsuario(usuarioDTO)){
-                usuario.setUsuarioIngreso(usuarioDTO.getUsuarioIngreso());
+            if(!usuario.getUsuarioIngreso().equals(usuarioDTO.getUsuarioIngreso())){
+                if(!validarNombreUsuario(usuarioDTO)){
+                    return new Usuario(-1, null, null, null, null, null, null, null);
+                }
+            }
+            usuario.setUsuarioIngreso(usuarioDTO.getUsuarioIngreso());
                 usuario.setContraseña(usuarioDTO.getContraseña());
                 usuario.setCorreo(usuarioDTO.getCorreo());
                 usuario.setNombres(usuarioDTO.getNombres());
                 usuario.setApellidos(usuarioDTO.getApellidos());
                 // Guardar el usuario actualizado en la base de datos
-                return usuarioRepository.save(usuario);
-            }
-            return new Usuario(-1, null, null, null, null, null, null, null);
+                return usuarioRepository.save(usuario); 
         }
         return new Usuario(-2, null, null, null, null, null, null, null);
     }
