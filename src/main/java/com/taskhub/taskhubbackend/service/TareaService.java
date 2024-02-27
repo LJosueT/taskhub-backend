@@ -45,21 +45,21 @@ public class TareaService {
         }
         return null;
     }
-    //Leoncio
     public Tarea buscarIdTarea(Integer idTarea) {
         return tareaRepository.findById(idTarea).orElse(null);
     }
-    //Leoncio
-    public Tarea editarTarea(Integer idTarea, TareaDto TareaDTO) {
+    public Tarea editarTarea(Integer idTarea, TareaDto tareaDto) {
         Tarea tareaExistente = buscarIdTarea(idTarea);
-
         if (tareaExistente != null) {
+            tareaExistente.setNombre(tareaDto.getNombre());
+            tareaExistente.setDescripcion(tareaDto.getDescripcion());
+            tareaExistente.setFechaFin(tareaDto.getFecha_fin());
+            tareaExistente.setPrioridad(tareaDto.getPrioridad());
+            tareaExistente.setEstado(tareaDto.getEstado());
             return tareaRepository.save(tareaExistente);
         }
-
         return null;
     }
-    //Leoncio
     public void eliminarTarea(Integer idTarea) {
         tareaRepository.deleteById(idTarea);
     }

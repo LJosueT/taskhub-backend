@@ -8,7 +8,10 @@ import com.taskhub.taskhubbackend.service.TareaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +39,25 @@ public class TareaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de Usuario no encontrado");
         }
     }
-
+    @PutMapping("/{id}")
+    public ResponseEntity<?> editarTarea(@PathVariable Integer id, @RequestBody TareaDto tareaDto) {
+        Tarea tarea = tareaService.editarTarea(id, tareaDto);
+        if (tarea != null) {
+            return ResponseEntity.ok(new Response("Tarea actualizada con éxito", tarea));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tarea no encontrada con el id proporcionado");
+        }
+    }
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> eliminarTarea(@PathVariable Integer id) {
+        Tarea tareaExistente = tareaService.buscarIdTarea(id);
+        if (tareaExistente != null) {
+            tareaService.eliminarTarea(id);
+            return ResponseEntity.ok().body("Tarea eliminada con éxito");
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tarea no encontrada con el id proporcionado");
+        }
+    }
     @PostMapping("/filtrar")
     public ResponseEntity<?> filtrarTareasPorRangoDeFechas(@RequestBody FechaFiltroDTO fechaFiltroDTO) {
 
