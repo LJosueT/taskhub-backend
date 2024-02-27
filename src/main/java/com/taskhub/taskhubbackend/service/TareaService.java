@@ -64,8 +64,8 @@ public class TareaService {
         tareaRepository.deleteById(idTarea);
     }
 
-    public List<Tarea> filtrarTareasPorRangoDeFechas(Date fechaInicio, Date fechaFin) {
-        return tareaRepository.findByFechaFinBetween(fechaInicio, fechaFin);
+    public List<Tarea> filtrarTareasPorRangoDeFechas(Integer usuarioId, Date fechaInicio, Date fechaFin) {
+        return tareaRepository.findByUsuarioIdAndFechaFinBetween(usuarioId, fechaInicio, fechaFin);
     }
 
 }

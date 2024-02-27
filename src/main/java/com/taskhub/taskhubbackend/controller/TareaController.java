@@ -8,7 +8,6 @@ import com.taskhub.taskhubbackend.service.TareaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,13 +37,14 @@ public class TareaController {
         }
     }
 
-    @GetMapping("/filtrar")
+    @PostMapping("/filtrar")
     public ResponseEntity<?> filtrarTareasPorRangoDeFechas(@RequestBody FechaFiltroDTO fechaFiltroDTO) {
 
         Date fechaInicio = fechaFiltroDTO.getFechaInicio();
         Date fechaFin = fechaFiltroDTO.getFechaFin();
+        Integer usuarioId = fechaFiltroDTO.getUsuarioId();
 
-        List<Tarea> tareasFiltradas = tareaService.filtrarTareasPorRangoDeFechas(fechaInicio, fechaFin);
+        List<Tarea> tareasFiltradas = tareaService.filtrarTareasPorRangoDeFechas(usuarioId, fechaInicio, fechaFin);
 
         if (tareasFiltradas.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron tareas en el rango de fechas proporcionado.");
