@@ -78,7 +78,16 @@ public class TareaService {
     }
 
     public List<Tarea> filtrarTareasPorRangoDeFechas(Integer usuarioId, Date fechaInicio, Date fechaFin) {
-        return tareaRepository.findByUsuarioIdAndFechaFinBetween(usuarioId, fechaInicio, fechaFin);
+        List<Tarea> tareas = new ArrayList<>();
+        if(verificarIdUsuarioTarea(usuarioId)){
+            tareas = tareaRepository.findByUsuarioIdAndFechaFinBetween(usuarioId, fechaInicio, fechaFin);
+        }
+        else{
+            Tarea tareaDummy = new Tarea();
+            tareaDummy.setIdTarea(-1);
+            tareas.add(tareaDummy);
+        }
+         return tareas;
     }
 
 }

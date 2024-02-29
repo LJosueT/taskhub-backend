@@ -61,14 +61,14 @@ public class TareaController {
     @PostMapping("/{usuarioId}")
     public ResponseEntity<?> mostrarTareas(@PathVariable Integer usuarioId) {
         List<Tarea> ListaTareas = tareaService.mostrarTareas(usuarioId);
-        if (ListaTareas == null) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontraron tareas");
-        } else {
+        if (!ListaTareas.isEmpty()) {
             Tarea primeraTarea = ListaTareas.get(0);
             if (primeraTarea.getIdTarea() == -1){
                 return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de Usuario no encontrado");
             }
             return ResponseEntity.ok(new Response("Se encontraron las siguientes tareas", ListaTareas));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron tareas");
         }
     }
 
@@ -80,10 +80,14 @@ public class TareaController {
 
         List<Tarea> tareasFiltradas = tareaService.filtrarTareasPorRangoDeFechas(usuarioId, fechaInicio, fechaFin);
 
-        if (tareasFiltradas.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontraron tareas en el rango de fechas proporcionado.");
-        } else {
+        if (!tareasFiltradas.isEmpty()) {
+            Tarea primeraTarea = tareasFiltradas.get(0);
+            if (primeraTarea.getIdTarea() == -1){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de Usuario no encontrado");
+            }
             return ResponseEntity.ok(new Response("Se encontraron las siguientes tareas", tareasFiltradas));
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron tareas en el rango de fechas proporcionado.");
         }
     }
 }
