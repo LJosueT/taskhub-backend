@@ -32,7 +32,7 @@ public class UsuarioController {
         if (usuario.getIdUsuario() == -1) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Nombre de usuario ya existente");
         } else{
-            return ResponseEntity.ok(new Response("Usuario registrado de manera exitosa", usuario));
+            return ResponseEntity.ok(new Response("Usuario registrado con éxito", usuario));
         }
     }
 
@@ -46,7 +46,7 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de Usuario no encontrado");
         } 
         else {
-            return ResponseEntity.ok(new Response("Usuario actualizado exitosamente", usuario));
+            return ResponseEntity.ok(new Response("Usuario actualizado con éxito", usuario));
         }
     }    
 }

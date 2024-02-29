@@ -10,4 +10,7 @@ import java.util.List;
 public interface TareaRepository extends JpaRepository<Tarea, Integer> {
     @Query("SELECT t FROM Tarea t WHERE t.idUsuario = :usuarioId AND t.fechaFin BETWEEN :fechaInicio AND :fechaFin")
     List<Tarea> findByUsuarioIdAndFechaFinBetween(Integer usuarioId, Date fechaInicio, Date fechaFin);
+
+    @Query("SELECT t FROM Tarea t WHERE t.idUsuario = :usuarioId")
+    List<Tarea> findByUsuarioId(Integer usuarioId);
 }

@@ -7,6 +7,7 @@ import com.taskhub.taskhubbackend.repository.TareaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -22,8 +23,7 @@ public class TareaService {
         this.usuarioService = usuarioService;
     }
 
-    public boolean verificarIdUsuarioTarea(TareaDto tareaDTO){
-        Integer id = tareaDTO.getId_usuario();
+    public boolean verificarIdUsuarioTarea(Integer id){
         Usuario usuario = usuarioService.buscarIdUsuario(id);
         if (usuario != null) {
             return true;
@@ -34,7 +34,7 @@ public class TareaService {
 
     public Tarea registrarTarea(TareaDto TareaDTO) {
         Tarea tarea = new Tarea();
-        if(verificarIdUsuarioTarea(TareaDTO)){
+        if(verificarIdUsuarioTarea(TareaDTO.getId_usuario())){
             tarea.setNombre(TareaDTO.getNombre());
             tarea.setDescripcion(TareaDTO.getDescripcion());
             tarea.setFechaFin(TareaDTO.getFecha_fin());
@@ -62,6 +62,19 @@ public class TareaService {
     }
     public void eliminarTarea(Integer idTarea) {
         tareaRepository.deleteById(idTarea);
+    }
+
+    public List<Tarea> mostrarTareas(Integer usuarioId) {
+        List<Tarea> tareas = new ArrayList<>();
+        if(verificarIdUsuarioTarea(usuarioId)){
+            tareas = tareaRepository.findByUsuarioId(usuarioId);
+        }
+        else{
+            Tarea tareaDummy = new Tarea();
+            tareaDummy.setIdTarea(-1);
+            tareas.add(tareaDummy);
+        }
+         return tareas;
     }
 
     public List<Tarea> filtrarTareasPorRangoDeFechas(Integer usuarioId, Date fechaInicio, Date fechaFin) {

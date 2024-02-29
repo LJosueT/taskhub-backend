@@ -34,7 +34,7 @@ public class TareaController {
     public ResponseEntity<?> registrarTarea(@RequestBody TareaDto tareasDto) {
         Tarea tarea = tareaService.registrarTarea(tareasDto);
         if(tarea != null){
-            return ResponseEntity.ok(new Response("Tarea registrada de manera exitosa", tarea));
+            return ResponseEntity.ok(new Response("Tarea registrada con éxito", tarea));
         } else {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de Usuario no encontrado");
         }
@@ -58,17 +58,30 @@ public class TareaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tarea no encontrada con el id proporcionado");
         }
     }
-    @PostMapping("/filtrar")
-    public ResponseEntity<?> filtrarTareasPorRangoDeFechas(@RequestBody FechaFiltroDTO fechaFiltroDTO) {
+    @PostMapping("/{usuarioId}")
+    public ResponseEntity<?> mostrarTareas(@PathVariable Integer usuarioId) {
+        List<Tarea> ListaTareas = tareaService.mostrarTareas(usuarioId);
+        if (ListaTareas == null) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontraron tareas");
+        } else {
+            Tarea primeraTarea = ListaTareas.get(0);
+            if (primeraTarea.getIdTarea() == -1){
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de Usuario no encontrado");
+            }
+            return ResponseEntity.ok(new Response("Se encontraron las siguientes tareas", ListaTareas));
+        }
+    }
+
+    @PostMapping("/filtrar/{usuarioId}")
+    public ResponseEntity<?> filtrarTareasPorRangoDeFechas(@PathVariable Integer usuarioId, @RequestBody FechaFiltroDTO fechaFiltroDTO) {
 
         Date fechaInicio = fechaFiltroDTO.getFechaInicio();
         Date fechaFin = fechaFiltroDTO.getFechaFin();
-        Integer usuarioId = fechaFiltroDTO.getUsuarioId();
 
         List<Tarea> tareasFiltradas = tareaService.filtrarTareasPorRangoDeFechas(usuarioId, fechaInicio, fechaFin);
 
         if (tareasFiltradas.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontraron tareas en el rango de fechas proporcionado.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("No se encontraron tareas en el rango de fechas proporcionado.");
         } else {
             return ResponseEntity.ok(new Response("Se encontraron las siguientes tareas", tareasFiltradas));
         }
