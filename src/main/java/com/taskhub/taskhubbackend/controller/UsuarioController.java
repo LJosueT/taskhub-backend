@@ -2,8 +2,10 @@ package com.taskhub.taskhubbackend.controller;
 
 import com.taskhub.taskhubbackend.dto.Response;
 import com.taskhub.taskhubbackend.dto.UsuarioDto;
+import com.taskhub.taskhubbackend.dto.UtilsDto;
 import com.taskhub.taskhubbackend.entity.Usuario;
 import com.taskhub.taskhubbackend.service.UsuarioService;
+import com.taskhub.taskhubbackend.util.Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("/taskhub/v1/usuarios")
@@ -25,7 +29,7 @@ public class UsuarioController {
         this.usuarioService = usuarioService;
     }
 
-    @PostMapping
+    @PostMapping("/signup")
     public ResponseEntity<?> agregarUsuario(@RequestBody UsuarioDto usuarioDTO) {
         Usuario usuario = usuarioService.crearUsuario(usuarioDTO);
 
@@ -48,6 +52,17 @@ public class UsuarioController {
         else {
             return ResponseEntity.ok(new Response("Usuario actualizado con éxito", usuario));
         }
-    }    
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<String> login(@RequestBody(required = true) Map<String, String> requestMap){
+        try{
+            return usuarioService.login(requestMap);
+        }catch (Exception exception){
+            exception.printStackTrace();
+        }
+        return Utils.getResponseEntity(UtilsDto.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
 }
 
