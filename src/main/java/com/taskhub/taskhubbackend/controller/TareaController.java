@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,7 +59,7 @@ public class TareaController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Tarea no encontrada con el id proporcionado");
         }
     }
-    @PostMapping("/{usuarioId}")
+    @GetMapping("/{usuarioId}")
     public ResponseEntity<?> mostrarTareas(@PathVariable Integer usuarioId) {
         List<Tarea> ListaTareas = tareaService.mostrarTareas(usuarioId);
         if (!ListaTareas.isEmpty()) {
