@@ -92,7 +92,7 @@ public class UsuarioService {
             if(authentication.isAuthenticated()){
                 if(customerDetailsService.getUserDetail().getEstado().equals("1")){
                     return new ResponseEntity<String>("{\"token\": \"" +
-                            jwtUtil.generateToken(customerDetailsService.getUserDetail().getCorreo()) + "\")}",
+                            jwtUtil.generateToken(customerDetailsService.getUserDetail().getCorreo()) + "\"}",
                             HttpStatus.OK);
                 }
             }else{

@@ -20,7 +20,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
-
+import java.util.Arrays;
 import java.io.InputStream;
 
 @Configuration
@@ -40,7 +40,26 @@ public class SecurityConfig {
 
     @Bean
     protected SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+        
+
+        // httpSecurity.cors().configurationSource(request -> new CorsConfiguration().applyPermitDefaultValues())
+        //         .and()
+        //         .csrf().disable()
+        //         .authorizeHttpRequests()
+        //         .requestMatchers("/taskhub/v1/usuarios/login", "/taskhub/v1/usuarios/signup", "/taskhub/v1/usuarios/forgotPassword").permitAll()
+        //         .anyRequest()
+        //         .authenticated()
+        //         .and().exceptionHandling()
+        //         .and().sessionManagement()
+        //         .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+        // httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.setAllowedOrigins(Arrays.asList("http://localhost:4200/"));
+        corsConfiguration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        corsConfiguration.setAllowedHeaders(Arrays.asList("*"));
+        corsConfiguration.setAllowCredentials(false);
+
+        httpSecurity.cors().configurationSource(request -> corsConfiguration)
                 .and()
                 .csrf().disable()
                 .authorizeHttpRequests()
@@ -51,6 +70,11 @@ public class SecurityConfig {
                 .and().sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         httpSecurity.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        
+        
+
+        // httpSecurity.cors().configurationSource(request -> corsConfiguration);
+
         return httpSecurity.build();
     }
 
@@ -58,6 +82,8 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception{
         return authenticationConfiguration.getAuthenticationManager();
     }
+
+    
 
     @Bean
     public EmailService emailService(){
