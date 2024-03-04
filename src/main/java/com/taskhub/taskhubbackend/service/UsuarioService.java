@@ -1,5 +1,7 @@
 package com.taskhub.taskhubbackend.service;
 
+import com.taskhub.taskhubbackend.dto.LoginResponse;
+import com.taskhub.taskhubbackend.dto.UsuarioDetalleDto;
 import com.taskhub.taskhubbackend.dto.UsuarioDto;
 import com.taskhub.taskhubbackend.entity.Usuario;
 import com.taskhub.taskhubbackend.repository.UsuarioRepository;
@@ -12,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -71,38 +75,51 @@ public class UsuarioService {
                     return new Usuario(-1, null, null, null, null, null, null, null);
                 }
             }
+
             usuario.setUsuarioIngreso(usuarioDTO.getUsuarioIngreso());
-                usuario.setContraseña(usuarioDTO.getContraseña());
-                usuario.setCorreo(usuarioDTO.getCorreo());
-                usuario.setNombres(usuarioDTO.getNombres());
-                usuario.setApellidos(usuarioDTO.getApellidos());
-                // Guardar el usuario actualizado en la base de datos
-                return usuarioRepository.save(usuario); 
+            usuario.setContraseña(usuarioDTO.getContraseña());
+            usuario.setCorreo(usuarioDTO.getCorreo());
+            usuario.setNombres(usuarioDTO.getNombres());
+            usuario.setApellidos(usuarioDTO.getApellidos());
+            // Guardar el usuario actualizado en la base de datos
+            return usuarioRepository.save(usuario);
         }
         return new Usuario(-2, null, null, null, null, null, null, null);
     }
 
-    public ResponseEntity<String> login(Map<String, String> requestMap){
-//        log.info("Dentro del login");
-        try{
+    public ResponseEntity<LoginResponse> login(Map<String, String> requestMap) {
+        try {
+            String correo = requestMap.get("correo");
+            String contraseña = requestMap.get("contraseña");
+
             Authentication authentication = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(requestMap.get("correo"), requestMap.get("contraseña"))
+                    new UsernamePasswordAuthenticationToken(correo, contraseña)
+            );
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+
+            Usuario userDetail = usuarioRepository.findByCorreo(correo).orElseThrow(
+                    () -> new UsernameNotFoundException("Usuario no encontrado")
             );
 
-            if(authentication.isAuthenticated()){
-                if(customerDetailsService.getUserDetail().getEstado().equals("1")){
-                    return new ResponseEntity<String>("{\"token\": \"" +
-                            jwtUtil.generateToken(customerDetailsService.getUserDetail().getCorreo()) + "\"}",
-                            HttpStatus.OK);
-                }
-            }else{
-                return new ResponseEntity<String>("{\"mensaje\": \"" + "Algo salió mal" + "\")}", HttpStatus.BAD_REQUEST);
-            }
+            if (userDetail.getEstado().equals("1")) {
+                String token = jwtUtil.generateToken(userDetail.getCorreo());
 
-        }catch (Exception exception){
-            log.error("{}", exception);
+                UsuarioDetalleDto usuarioDetalleDto = new UsuarioDetalleDto();
+                usuarioDetalleDto.setIdUsuario(userDetail.getIdUsuario());
+                usuarioDetalleDto.setUsuarioIngreso(userDetail.getUsuarioIngreso());
+                usuarioDetalleDto.setCorreo(userDetail.getCorreo());
+                usuarioDetalleDto.setNombres(userDetail.getNombres());
+                usuarioDetalleDto.setApellidos(userDetail.getApellidos());
+
+                LoginResponse loginResponse = new LoginResponse(token, usuarioDetalleDto);
+                return ResponseEntity.ok(loginResponse);
+            } else {
+                return ResponseEntity.badRequest().body(new LoginResponse("El usuario no está activo", null));
+            }
+        } catch (Exception exception) {
+            log.error("Error en el login: {}", exception.getMessage());
+            return ResponseEntity.badRequest().body(new LoginResponse("Credenciales incorrectas", null));
         }
-        return new ResponseEntity<String>("{\"mensaje\":\""+"Credenciales incorrectas"+"\"}", HttpStatus.BAD_REQUEST);
     }
 }
 

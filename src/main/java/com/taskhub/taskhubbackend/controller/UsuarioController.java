@@ -1,5 +1,6 @@
 package com.taskhub.taskhubbackend.controller;
 
+import com.taskhub.taskhubbackend.dto.LoginResponse;
 import com.taskhub.taskhubbackend.dto.Response;
 import com.taskhub.taskhubbackend.dto.UsuarioDto;
 import com.taskhub.taskhubbackend.dto.UtilsDto;
@@ -43,25 +44,26 @@ public class UsuarioController {
     @PutMapping("/{id}")
     public ResponseEntity<?> editarUsuario(@PathVariable int id, @RequestBody UsuarioDto usuarioDto) {
         Usuario usuario = usuarioService.editarUsuario(id, usuarioDto);
-        
+
         if (usuario.getIdUsuario() == -1) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Nombre de usuario ya existente");
         } else if (usuario.getIdUsuario() == -2) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Id de Usuario no encontrado");
-        } 
+        }
         else {
             return ResponseEntity.ok(new Response("Usuario actualizado con éxito", usuario));
         }
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody(required = true) Map<String, String> requestMap){
-        try{
+    public ResponseEntity<LoginResponse> login(@RequestBody Map<String, String> requestMap) {
+        try {
             return usuarioService.login(requestMap);
-        }catch (Exception exception){
+        } catch (Exception exception) {
             exception.printStackTrace();
+            LoginResponse errorResponse = new LoginResponse(null, null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
-        return Utils.getResponseEntity(UtilsDto.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
 }

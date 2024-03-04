@@ -11,6 +11,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Objects;
 
 @Slf4j
@@ -24,14 +25,10 @@ public class CustomerDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        log.info("Dentro de loadUserByUsername {}", username);
-        userDetail = usuarioRepository.findByCorreo(username);
+        Usuario userDetail = usuarioRepository.findByCorreo(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con el correo: " + username));
 
-        if(!Objects.isNull(userDetail)){
-            return new User(userDetail.getCorreo(), userDetail.getContraseña(), new ArrayList<>());
-        }else{
-            throw new UsernameNotFoundException("Usuario no encontrado");
-        }
+        return new User(userDetail.getCorreo(), userDetail.getContraseña(), Collections.emptyList());
     }
 
     public Usuario getUserDetail(){
