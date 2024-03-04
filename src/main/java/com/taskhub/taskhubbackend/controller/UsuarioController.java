@@ -3,6 +3,7 @@ package com.taskhub.taskhubbackend.controller;
 import com.taskhub.taskhubbackend.dto.LoginResponse;
 import com.taskhub.taskhubbackend.dto.Response;
 import com.taskhub.taskhubbackend.dto.UsuarioDto;
+import com.taskhub.taskhubbackend.dto.UsuarioEditarDto;
 import com.taskhub.taskhubbackend.dto.UtilsDto;
 import com.taskhub.taskhubbackend.entity.Usuario;
 import com.taskhub.taskhubbackend.service.UsuarioService;
@@ -42,8 +43,8 @@ public class UsuarioController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> editarUsuario(@PathVariable int id, @RequestBody UsuarioDto usuarioDto) {
-        Usuario usuario = usuarioService.editarUsuario(id, usuarioDto);
+    public ResponseEntity<?> editarUsuario(@PathVariable int id, @RequestBody UsuarioEditarDto usuarioEditarDto) {
+        Usuario usuario = usuarioService.editarUsuario(id, usuarioEditarDto);
 
         if (usuario.getIdUsuario() == -1) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("Nombre de usuario ya existente");

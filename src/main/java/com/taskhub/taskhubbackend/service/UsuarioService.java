@@ -3,6 +3,7 @@ package com.taskhub.taskhubbackend.service;
 import com.taskhub.taskhubbackend.dto.LoginResponse;
 import com.taskhub.taskhubbackend.dto.UsuarioDetalleDto;
 import com.taskhub.taskhubbackend.dto.UsuarioDto;
+import com.taskhub.taskhubbackend.dto.UsuarioEditarDto;
 import com.taskhub.taskhubbackend.entity.Usuario;
 import com.taskhub.taskhubbackend.repository.UsuarioRepository;
 import com.taskhub.taskhubbackend.security.CustomerDetailsService;
@@ -41,10 +42,17 @@ public class UsuarioService {
         this.usuarioRepository = usuarioRepository;
     }
 
+    private boolean validarNombreUsuario(String nombreUsuario) {
+        Usuario usuario = usuarioRepository.findByUsuarioIngreso(nombreUsuario).orElse(null);
+        return usuario == null;
+    }
+
     public boolean validarNombreUsuario(UsuarioDto usuarioDTO) {
-        String nombre_usuario = usuarioDTO.getUsuarioIngreso();
-        Usuario usuario = usuarioRepository.findByUsuarioIngreso(nombre_usuario).orElse(null);
-        return (usuario == null);
+        return validarNombreUsuario(usuarioDTO.getUsuarioIngreso());
+    }
+
+    public boolean validarNombreUsuario(UsuarioEditarDto usuarioEditarDTO) {
+        return validarNombreUsuario(usuarioEditarDTO.getUsuarioIngreso());
     }
 
     public Usuario crearUsuario(UsuarioDto usuarioDTO) {
@@ -67,20 +75,18 @@ public class UsuarioService {
         return usuarioRepository.findById(usuario_id).orElse(null);
     }
 
-    public Usuario editarUsuario(Integer usuario_id, UsuarioDto usuarioDTO) {
+    public Usuario editarUsuario(Integer usuario_id, UsuarioEditarDto usuarioEditarDTO) {
         Usuario usuario = buscarIdUsuario(usuario_id);
         if (usuario != null) {
-            if(!usuario.getUsuarioIngreso().equals(usuarioDTO.getUsuarioIngreso())){
-                if(!validarNombreUsuario(usuarioDTO)){
+            if(!usuario.getUsuarioIngreso().equals(usuarioEditarDTO.getUsuarioIngreso())){
+                if(!validarNombreUsuario(usuarioEditarDTO)){
                     return new Usuario(-1, null, null, null, null, null, null, null);
                 }
             }
-
-            usuario.setUsuarioIngreso(usuarioDTO.getUsuarioIngreso());
-            usuario.setContraseña(usuarioDTO.getContraseña());
-            usuario.setCorreo(usuarioDTO.getCorreo());
-            usuario.setNombres(usuarioDTO.getNombres());
-            usuario.setApellidos(usuarioDTO.getApellidos());
+            usuario.setUsuarioIngreso(usuarioEditarDTO.getUsuarioIngreso());
+            usuarioEditarDTO.getContraseña().ifPresent(usuario::setContraseña);
+            usuario.setNombres(usuarioEditarDTO.getNombres());
+            usuario.setApellidos(usuarioEditarDTO.getApellidos());
             // Guardar el usuario actualizado en la base de datos
             return usuarioRepository.save(usuario);
         }
